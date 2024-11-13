@@ -19,13 +19,14 @@ class DocumentLoader:
 
     async def load(self) -> list:
         tasks = []
+        print(f"path is {self.path}")
         for root, dirs, files in os.walk(self.path):
             for file in files:
                 file_path = os.path.join(root, file)
                 file_name, file_extension_with_dot = os.path.splitext(file_path)
                 file_extension = file_extension_with_dot.strip(".")
                 tasks.append(self._load_document(file_path, file_extension))
-
+        print(f"tasks are {tasks}")
         docs = []
         for pages in await asyncio.gather(*tasks):
             for page in pages:
