@@ -36,12 +36,16 @@ class ResearchConductor:
 
         if self.researcher.verbose:
             await stream_output("logs", "agent_generated", self.researcher.agent, self.researcher.websocket)
-
+        print(f"report source is {self.researcher.report_source}")
+        print(f"local value is {ReportSource.Local.value}")
+        print(f"hybrid value is {ReportSource.Hybrid.value}")
         # If specified, the researcher will use the given urls as the context for the research.
         if self.researcher.source_urls:
+            print("scenario 1")
             self.researcher.context = await self.__get_context_by_urls(self.researcher.source_urls)
 
         elif self.researcher.report_source == ReportSource.Local.value:
+            print("scenario 2")
             document_data = await DocumentLoader(self.researcher.cfg.doc_path).load()
             if self.researcher.vector_store:
                 self.researcher.vector_store.load(document_data)
@@ -50,10 +54,13 @@ class ResearchConductor:
 
         # Hybrid search including both local documents and web sources
         elif self.researcher.report_source == ReportSource.Hybrid.value:
+            print("scenario 3")
             document_data = await DocumentLoader(self.researcher.cfg.doc_path).load()
+            print("complete loading docs")
             if self.researcher.vector_store:
                 self.researcher.vector_store.load(document_data)
             docs_context = await self.__get_context_by_search(self.researcher.query, document_data)
+            print("complete searching local docs")
             web_context = await self.__get_context_by_search(self.researcher.query)
             self.researcher.context = f"Context from local documents: {docs_context}\n\nContext from web sources: {web_context}"
 
