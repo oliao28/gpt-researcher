@@ -19,6 +19,7 @@ class Config:
         self.embedding_kwargs: Dict[str, Any] = {}
 
         config_to_use = self.load_config(config_path)
+        print(f"config_to_use is {config_to_use}")
         self._set_attributes(config_to_use)
         self._set_embedding_attributes()
         self._set_llm_attributes()
@@ -46,6 +47,7 @@ class Config:
         )
 
     def _set_llm_attributes(self) -> None:
+        print(f"fast_llm is {self.fast_llm}")
         self.fast_llm_provider, self.fast_llm_model = self.parse_llm(self.fast_llm)
         self.smart_llm_provider, self.smart_llm_model = self.parse_llm(self.smart_llm)
         self.strategic_llm_provider, self.strategic_llm_model = self.parse_llm(self.strategic_llm)
@@ -80,6 +82,7 @@ class Config:
             "will be removed soon. Use FAST_LLM and SMART_LLM instead."
         )
         if os.getenv("LLM_PROVIDER") is not None:
+            print(f"llm provider scenario 1")        
             warnings.warn(_deprecation_warning, FutureWarning, stacklevel=2)
             self.fast_llm_provider = (
                 os.environ["LLM_PROVIDER"] or self.fast_llm_provider
@@ -95,6 +98,7 @@ class Config:
             self.smart_llm_model = os.environ["SMART_LLM_MODEL"] or self.smart_llm_model
         
     def _set_doc_path(self, config: Dict[str, Any]) -> None:
+        print(f"config doc_path is {config['DOC_PATH']}")
         self.doc_path = config['DOC_PATH']
         if self.doc_path:
             try:
@@ -155,6 +159,8 @@ class Config:
         if llm_str is None:
             return None, None
         try:
+            print(f"llm provider scenario 1")
+            print(f"llm_str is {llm_str}")
             llm_provider, llm_model = llm_str.split(":", 1)
             assert llm_provider in _SUPPORTED_PROVIDERS, (
                 f"Unsupported {llm_provider}.\nSupported llm providers are: "
@@ -189,6 +195,7 @@ class Config:
 
     def validate_doc_path(self):
         """Ensure that the folder exists at the doc path"""
+        print(f"validate doc path is {self.doc_path}")
         os.makedirs(self.doc_path, exist_ok=True)
 
     @staticmethod
